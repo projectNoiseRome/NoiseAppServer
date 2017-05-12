@@ -3,6 +3,12 @@ package database;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -326,6 +332,67 @@ public class ConnectionManager {
 			}
 			return operationResult;
 		}
+	
+	
+	//POST
+	public JSONObject sensorPost(String body){
+		JSONObject operationResult = new JSONObject();
+		try{
+			getConnection();
+			JSONObject jsonObj = new JSONObject(body);
+			System.out.println("sendNoiseLevel here");
+			System.out.println("Received noise level : " + body);
+			//PARSING JSON DATA HERE
+			String noiseValue = jsonObj.getString("noiseValue");
+			String sensorName = jsonObj.getString("sensorName");
+			String latitude = jsonObj.getString("latitude");
+			String longitude = jsonObj.getString("longitude");
+			double db = Double.parseDouble(noiseValue);
+			double noiseLevel = Double.parseDouble(noiseValue);
+			System.out.println("Parsed noise's value : " + noiseLevel);
+			System.out.println("Parsed coordinates : " + latitude + ", " + longitude);
+			//ACQUIRING CURRENT DATE
+        	Date date = new Date();
+			LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			int year  = localDate.getYear();
+			int month = localDate.getMonthValue();
+			int day   = localDate.getDayOfMonth();
+			Calendar c = Calendar.getInstance();
+			c.set(year, month-1, day);
+			int day_of_week = c.get(Calendar.DAY_OF_WEEK);
+			String hours = Integer.toString(c.getTime().getHours());
+			String minutes = Integer.toString(c.getTime().getMinutes());
+			String seconds = Integer.toString(c.getTime().getSeconds());
+        
+        
+			System.out.println(day+"/"+month+"/"+year+", "+day_of_week + "/" + hours + "-" + minutes +"-" + seconds);
+			//ADD THE RESULT TO THE NOISE'S SENSOR TABLE
+			//START TO USE THE DB
+			//CHECK THE PRESENCE OF THE SENSOR IN THE SENSORS TABLE
+			String rs = this.getQueryResultForSensor("SELECT * FROM "+ SENSOR_TABLE +" WHERE SENSOR_NAME = '" + sensorName + "' ", sensorName);
+			String result = "";
+			//IF EXIST, JUST ADD THE DATA
+			if(!rs.equals("")){
+				result = this.executeQuery("INSERT INTO "+ sensorName + " VALUES ("+ db +", " + day + ", " + month +", " + year +", " + day_of_week +", " + hours +", " + minutes +", " + seconds +")");
+        		this.executeQuery("UPDATE "+SENSOR_TABLE + " SET NOISE_LEVEL = " + db + " WHERE SENSOR_NAME = '" + sensorName +"'");
+        		System.out.println("Successfully added the values in "+sensorName+" and updated the sensors table");
+			}
+			//CREATE THE TABLE FOR THE SENSOR IF NOT EXISTS
+			else{
+				this.executeQuery("CREATE TABLE IF NOT EXISTS " + sensorName + " (NOISE_LEVEL FLOAT NOT NULL, DAY INTEGER NOT NULL, MONTH INTEGER NOT NULL, YEAR INTEGER NOT NULL, DAYWEEK INTEGER NOT NULL, HOUR INTEGER NOT NULL, MINUTE INTEGER NOT NULL, SECONDS INTEGER NOT NULL)");
+				this.executeQuery("INSERT INTO " + SENSOR_TABLE + " VALUES ('" + sensorName +"','"+ latitude +"','"+ longitude +"', "+db+")");
+				this.executeQuery("INSERT INTO "+ sensorName + " VALUES ("+ db +", " + day + ", " + month +", " + year +", " + day_of_week +", " + hours +", " + minutes +", " + seconds +")");
+				this.executeQuery("UPDATE "+ SENSOR_TABLE + " SET NOISE_LEVEL = " + db + " WHERE SENSOR_NAME = '" + sensorName  +"'");
+				System.out.println("Successfully created the table "+ sensorName + " and added the values in it. Updated the last sensor's value in the sensors table");
+			}
+			closeConnection();
+		}catch(Exception E){
+			System.out.println("Something went wrong during the query execution");
+			operationResult.put("Error", "Sensor not found or technical issue happened");
+			
+		}
+		return operationResult;
+	}
 
 
 }
