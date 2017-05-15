@@ -27,6 +27,7 @@ public class ConnectionManager {
 	private static boolean firstRun = true;
 	private static boolean firstInitialization = true;
 	private static final String SENSOR_LIST_QUERY = "SELECT * FROM "+SENSOR_TABLE;
+	private static final String USER_LIST_QUERY = "SELECT * FROM "+USER_TABLE;
 	
 	
 	public ConnectionManager(ConnectionMysql connection) throws ClassNotFoundException{
@@ -71,7 +72,7 @@ public class ConnectionManager {
 			String createDatabase = "CREATE DATABASE IF NOT EXISTS "+DATABASE_NAME;
 			String useDatabase = "USE " + DATABASE_NAME;
 			String sensors = "CREATE TABLE IF NOT EXISTS "+SENSOR_TABLE+"(SENSOR_NAME VARCHAR(32) PRIMARY KEY, LATITUDE VARCHAR(32) NOT NULL, LONGITUDE VARCHAR(32) NOT NULL, NOISE_LEVEL FLOAT NOT NULL)";
-			String userRilevations = "CREATE TABLE IF NOT EXISTS "+USER_TABLE+"(USER_NAME VARCHAR(32) PRIMARY KEY, LATITUDE VARCHAR(32) NOT NULL, LONGITUDE VARCHAR(32) NOT NULL, NOISE_LEVEL FLOAT NOT NULL, NOISE_TYPE VARCHAR(32) NOT NULL)";
+			String userRilevations = "CREATE TABLE IF NOT EXISTS "+USER_TABLE+"(USER_NAME VARCHAR(32) NOT NULL, LATITUDE VARCHAR(32) NOT NULL, LONGITUDE VARCHAR(32) NOT NULL, NOISE_LEVEL FLOAT NOT NULL, NOISE_TYPE VARCHAR(32) NOT NULL)";
 			Statement stmt = (Statement)conn.createStatement();
 			stmt.execute(createDatabase);
 			stmt.execute(useDatabase);
@@ -153,6 +154,46 @@ public class ConnectionManager {
 			}
 			System.out.println(list);
 			sensorList.put("sensors", list);
+			stmt.close();
+			closeConnection();
+			
+		}
+		catch (SQLException | ClassNotFoundException e) {
+			System.out.println("Something went wrong during the query execution");
+			JSONObject error = new JSONObject();
+			error.put("Error", "Something went wrong during the execution of the query");
+			list.put(error);
+			sensorList.put("Error", list);
+			//e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+		}
+		return sensorList;
+	}
+	
+	//RETURN THE SENSOR LIST
+	public JSONObject userDataList(){
+		JSONArray list = new JSONArray();
+		JSONObject sensorList = new JSONObject();
+		//ACCESS TO THE DB
+		try{
+			getConnection();
+			Statement stmt = (Statement) conn.createStatement();
+			ResultSet rs = stmt.executeQuery(USER_LIST_QUERY);
+			while(rs.next()){
+				JSONObject temp = new JSONObject();
+				String userName = rs.getString("USER_NAME");
+				String latitude = rs.getString("LATITUDE");
+				String longitude = rs.getString("LONGITUDE");
+				String noiseLevel = rs.getString("NOISE_LEVEL");
+				String noiseType = rs.getString("NOISE_TYPE");
+				temp.put("userName", userName);
+				temp.put("latitude", latitude);
+				temp.put("longitude", longitude);
+				temp.put("noiseLevel", noiseLevel);
+				temp.put("noiseType", noiseType);
+				list.put(temp);
+			}
+			System.out.println(list);
+			sensorList.put("userData", list);
 			stmt.close();
 			closeConnection();
 			
@@ -293,6 +334,15 @@ public class ConnectionManager {
 				 System.out.println(min);
 			}
 			stats.put("minNoise", min);
+			//LAST NOISE VALUE
+			rs = stmt.executeQuery("SELECT * FROM "+sensorName + " ORDER BY NOISE_LEVEL DESC LIMIT 1");
+			String last = "";
+			while(rs.next()){
+				 last = rs.getString(1);
+				 System.out.println(last);
+			}
+			stats.put("lastNoise", last);
+			
 			
 			System.out.println(stats);
 			stmt.close();
@@ -334,19 +384,18 @@ public class ConnectionManager {
 		}
 	
 	
-	//POST
+	//POST SENSOR DATA
 	public JSONObject sensorPost(String body){
-		JSONObject operationResult = new JSONObject();
+		JSONObject operationResult = new JSONObject(body);
 		try{
 			getConnection();
-			JSONObject jsonObj = new JSONObject(body);
 			System.out.println("sendNoiseLevel here");
 			System.out.println("Received noise level : " + body);
 			//PARSING JSON DATA HERE
-			String noiseValue = jsonObj.getString("noiseValue");
-			String sensorName = jsonObj.getString("sensorName");
-			String latitude = jsonObj.getString("latitude");
-			String longitude = jsonObj.getString("longitude");
+			String noiseValue = operationResult.getString("noiseValue");
+			String sensorName = operationResult.getString("sensorName");
+			String latitude = operationResult.getString("latitude");
+			String longitude = operationResult.getString("longitude");
 			double db = Double.parseDouble(noiseValue);
 			double noiseLevel = Double.parseDouble(noiseValue);
 			System.out.println("Parsed noise's value : " + noiseLevel);
@@ -386,10 +435,52 @@ public class ConnectionManager {
 				System.out.println("Successfully created the table "+ sensorName + " and added the values in it. Updated the last sensor's value in the sensors table");
 			}
 			closeConnection();
-		}catch(Exception E){
+		}catch(Exception e){
 			System.out.println("Something went wrong during the query execution");
-			operationResult.put("Error", "Sensor not found or technical issue happened");
+			e.printStackTrace();
+			JSONObject error = new JSONObject();
+			error.put("Error", "Sensor not found or technical issue happened");
+			return error;
 			
+		}
+		return operationResult;
+	}
+	
+	//POST USER DATA
+	public JSONObject userPost(String body){
+		JSONObject operationResult = new JSONObject(body);
+		try{
+			getConnection();
+			System.out.println("sendNoiseLevel here");
+			System.out.println("Received noise level : " + body);
+			//PARSING JSON DATA HERE
+			/*
+			 * userName
+			 * latitude
+			 * longitude
+			 * noiseLevel
+			 * noiseType
+			 * 
+			 */
+			String userName = operationResult.getString("userName");
+			String latitude = operationResult.getString("latitude");
+			String longitude = operationResult.getString("longitude");
+			String noiseValue = operationResult.getString("noiseValue");
+			String noiseType = operationResult.getString("noiseType");
+			double db = Double.parseDouble(noiseValue);
+			double noiseLevel = Double.parseDouble(noiseValue);
+			System.out.println("Parsed noise's value : " + noiseLevel);
+			System.out.println("Parsed coordinates : " + latitude + ", " + longitude);
+			this.executeQuery("INSERT INTO " + USER_TABLE + " VALUES ('" + userName +"','"+ latitude +"','"+ longitude +"', "+db+",'"+ noiseType +"')");
+			System.out.println("Successfully added the " + userName + " to the user rilevation");
+			closeConnection();
+		}catch(Exception e){
+			System.out.println("Something went wrong during the query execution");
+			e.printStackTrace();
+			JSONObject error = new JSONObject();
+			error.put("Error", "Sensor not found or technical issue happened");
+			return error;
+				
 		}
 		return operationResult;
 	}

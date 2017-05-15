@@ -33,7 +33,7 @@ public class SoundLevel {
 	private static final String SENSOR_TABLE = "sensorslist";
 	private static final String ERROR = "Error";
 	//SET UP HERE YOUR CONNECTION
-	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","PUT YOUR MYSQL USERNAME HERE","PUT HERE YOU MYSQL PASSWORD");
+	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","PUT YOUR USERNAME HERE","PUT YOUR PASSWORD HERE");
 		
 	@Path("/hellosound")
 	@GET
@@ -55,6 +55,26 @@ public class SoundLevel {
 		try {
 			cm = new ConnectionManager(conn);
 			 sensorList = cm.sensorList();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    if(sensorList.keySet().contains("Error")){
+	    	return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(sensorList.toString()).build();
+	    }
+		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(sensorList.toString()).build();
+	}
+	
+	@Path("/getUserDataList")
+	@Produces(MediaType.APPLICATION_JSON)
+	@GET
+	public Response getUserDataList(){
+		//OPEN CONNECTION WITH THE DB
+        ConnectionManager cm;
+        JSONObject sensorList = new JSONObject();
+		try {
+			cm = new ConnectionManager(conn);
+			 sensorList = cm.userDataList();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,7 +111,7 @@ public class SoundLevel {
 	@Path("/getAvgValues")
 	@Produces(MediaType.APPLICATION_JSON)
 	@GET
-	public Response getAvgValues(@QueryParam("sensorName") String sensorName, @QueryParam("day") int dayOfWeek){
+	public Response getAvgDayValues(@QueryParam("sensorName") String sensorName, @QueryParam("day") int dayOfWeek){
 		//OPEN CONNECTION WITH THE DB
 	    ConnectionManager cm;
 	    JSONObject avgValues = new JSONObject();
@@ -110,7 +130,7 @@ public class SoundLevel {
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(avgValues.toString()).build();
 	}
 	
-	//Return the sensor's table, to get the Stats
+	//Return the sensor's table, to get the Stats(when from client the user click on a pin)
 	@Path("/getSensorStats")
 	@Produces(MediaType.APPLICATION_JSON)
 	@GET
@@ -155,25 +175,47 @@ public class SoundLevel {
         return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity("Result of the the request : "+ sensorPost.toString()).build();
 	}
 	
-		//Delete the sensor table and the sensor entry int the sensorlist
-		@Path("/deleteSensor")
-		@Produces(MediaType.APPLICATION_JSON)
-		@DELETE
-		public Response deleteSensor(@QueryParam("sensorName") String sensorName){
-			//OPEN CONNECTION WITH THE DB
-	        ConnectionManager cm;
-	        JSONObject operationResult = new JSONObject();
-			try {
-				cm = new ConnectionManager(conn);
-				 operationResult = cm.deleteSensor(sensorName);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		    if(operationResult.keySet().contains("Error")){
-		    	return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(operationResult.toString()).build();
-		    }
-			return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(operationResult.toString()).build();
+	//Receive the data, insert it in the right sensor's table and add the data
+	@Path("/userNoiseLevel")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@POST
+	public Response userData(String noise) throws ClassNotFoundException, SQLException{
+		//OPENING CONNECTION WITH THE DB
+		ConnectionManager cm;
+	    JSONObject sensorPost = new JSONObject();
+	    try {
+			cm = new ConnectionManager(conn);
+			sensorPost = cm.userPost(noise);
+		}catch(ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    if(sensorPost.keySet().contains("Error")){
+	    	return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(sensorPost.toString()).build();
+	    	
+	    }
+	       return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity("Result of the the request : "+ sensorPost.toString()).build();
+	}
+	
+	//Delete the sensor table and the sensor entry int the sensorlist
+	@Path("/deleteSensor")
+	@Produces(MediaType.APPLICATION_JSON)
+	@DELETE
+	public Response deleteSensor(@QueryParam("sensorName") String sensorName){
+		//OPEN CONNECTION WITH THE DB
+        ConnectionManager cm;
+        JSONObject operationResult = new JSONObject();
+		try {
+			cm = new ConnectionManager(conn);
+			 operationResult = cm.deleteSensor(sensorName);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    if(operationResult.keySet().contains("Error")){
+	    	return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(operationResult.toString()).build();
+	    }
+		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(operationResult.toString()).build();
 		}
 
 }
