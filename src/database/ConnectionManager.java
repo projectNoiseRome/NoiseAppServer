@@ -1,10 +1,16 @@
+/*
+ *	This project was realized for the Pervasive System class at La Sapienza - Università di Roma
+ *	It is released with the Apache License 2.0
+ *	Developed by Federico Boarelli, Alessio Tirabasso and Marco Nigro
+ *	Rome, May 2017 
+ *
+ */
+
 package database;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -164,7 +170,7 @@ public class ConnectionManager {
 			error.put("Error", "Something went wrong during the execution of the query");
 			list.put(error);
 			sensorList.put("Error", list);
-			//e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+			e.printStackTrace();
 		}
 		return sensorList;
 	}
@@ -204,7 +210,7 @@ public class ConnectionManager {
 			error.put("Error", "Something went wrong during the execution of the query");
 			list.put(error);
 			sensorList.put("Error", list);
-			e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+			e.printStackTrace();
 		}
 		return sensorList;
 	}
@@ -256,7 +262,7 @@ public class ConnectionManager {
 				error.put("Error", "Sensor not found or technical issue happened");
 				sensorValues.put(error);
 				sensorList.put("Error", sensorValues);
-				//e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+				e.printStackTrace();
 			}
 			closeConnection();
 			return sensorList;
@@ -294,7 +300,7 @@ public class ConnectionManager {
 				error.put("Error", "Sensor not found or technical issue happened");
 				sensorValues.put(error);
 				avgValues.put("Error", sensorValues);
-				//e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+				e.printStackTrace();
 			}
 			closeConnection();
 			return avgValues;
@@ -349,7 +355,7 @@ public class ConnectionManager {
 			}catch (SQLException | ClassNotFoundException e) {
 				System.out.println("Something went wrong during the query execution");
 				stats.put("Error", "Sensor not found or technical issue happened");
-				e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+				e.printStackTrace();
 			}
 			closeConnection();
 			return stats;
@@ -378,7 +384,7 @@ public class ConnectionManager {
 			}catch (SQLException | ClassNotFoundException e) {
 				System.out.println("Something went wrong during the query execution");
 				operationResult.put("Error", "Sensor not found or technical issue happened");
-				//e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+				e.printStackTrace();
 			}
 			return operationResult;
 		}
