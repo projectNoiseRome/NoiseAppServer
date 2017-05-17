@@ -33,7 +33,7 @@ public class SoundLevel {
 	private static final String SENSOR_TABLE = "sensorslist";
 	private static final String ERROR = "Error";
 	//SET UP HERE YOUR CONNECTION
-	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","PUT YOUR USERNAME HERE","PUT YOUR PASSWORD HERE");
+	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","root","Pervasive_System_2017");
 		
 	@Path("/hellosound")
 	@GET

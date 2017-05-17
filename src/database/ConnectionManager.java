@@ -204,7 +204,7 @@ public class ConnectionManager {
 			error.put("Error", "Something went wrong during the execution of the query");
 			list.put(error);
 			sensorList.put("Error", list);
-			//e.printStackTrace();  //Uncomment to see stack trace for deeper debug
+			e.printStackTrace();  //Uncomment to see stack trace for deeper debug
 		}
 		return sensorList;
 	}
@@ -439,9 +439,8 @@ public class ConnectionManager {
 			System.out.println("Something went wrong during the query execution");
 			e.printStackTrace();
 			JSONObject error = new JSONObject();
-			error.put("Error", "Sensor not found or technical issue happened");
+			error.put("Error", "Error interecting with the database");
 			return error;
-			
 		}
 		return operationResult;
 	}
@@ -478,7 +477,7 @@ public class ConnectionManager {
 			System.out.println("Something went wrong during the query execution");
 			e.printStackTrace();
 			JSONObject error = new JSONObject();
-			error.put("Error", "Sensor not found or technical issue happened");
+			error.put("Error", "Error interecting with the database");
 			return error;
 				
 		}
