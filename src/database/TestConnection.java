@@ -1,3 +1,11 @@
+/*
+ *	This project was realized for the Pervasive System class at La Sapienza - Università di Roma
+ *	It is released with the Apache License 2.0
+ *	Developed by Federico Boarelli, Alessio Tirabasso and Marco Nigro
+ *	Rome, May 2017 
+ *
+ */
+
 package database;
 
 import java.sql.Connection;
@@ -5,7 +13,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import com.mysql.jdbc.DatabaseMetaData;
-import com.mysql.jdbc.Statement;
 
 public class TestConnection {
 	

@@ -29,7 +29,7 @@ public class SoundLevel {
 	private static final String ERROR = "Error";
 	
 	//Set up your connection here
-	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","PUT YOUR MYSQL USERNAME HERE","PUT YOUR MYSQL PASSWROD HERE");
+	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","root","Pervasive_System_2017");
 	
 	//Test case to check the server status
 	@Path("/hellosound")
@@ -57,6 +57,9 @@ public class SoundLevel {
 			sensorList = cm.sensorList();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	    if(sensorList.keySet().contains(ERROR)){
 	    	return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(sensorList.toString()).build();
@@ -79,6 +82,9 @@ public class SoundLevel {
 			cm = new ConnectionManager(conn);
 			 sensorList = cm.userDataList();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    if(sensorList.keySet().contains(ERROR)){
@@ -103,6 +109,9 @@ public class SoundLevel {
 			cm = new ConnectionManager(conn);
 			sensorValues = cm.sensorValues(sensorName);
 		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    if(sensorValues.keySet().contains(ERROR)){
@@ -132,7 +141,10 @@ public class SoundLevel {
 			}
 	    catch(ClassNotFoundException e) {
 				e.printStackTrace();
-			}
+			} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(avgValues.keySet().contains(ERROR)){
 		    return Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).entity(avgValues.toString()).build();
 		    	
@@ -155,6 +167,9 @@ public class SoundLevel {
 			cm = new ConnectionManager(conn);
 			sensorStats = cm.sensorStats(sensorName);
 		}catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    if(sensorStats.keySet().contains(ERROR)){
@@ -235,6 +250,9 @@ public class SoundLevel {
 			cm = new ConnectionManager(conn);
 			 operationResult = cm.deleteSensor(sensorName);
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    if(operationResult.keySet().contains(ERROR)){

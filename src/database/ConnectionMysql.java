@@ -1,3 +1,11 @@
+/*
+ *	This project was realized for the Pervasive System class at La Sapienza - Università di Roma
+ *	It is released with the Apache License 2.0
+ *	Developed by Federico Boarelli, Alessio Tirabasso and Marco Nigro
+ *	Rome, May 2017 
+ *
+ */
+
 package database;
 
 public class ConnectionMysql {

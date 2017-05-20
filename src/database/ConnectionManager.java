@@ -36,10 +36,12 @@ public class ConnectionManager {
 	private static final String USER_LIST_QUERY = "SELECT * FROM "+USER_TABLE;
 	
 	
-	public ConnectionManager(ConnectionMysql connection) throws ClassNotFoundException{
+	public ConnectionManager(ConnectionMysql connection) throws ClassNotFoundException, SQLException{
 		this.connection = connection;
 		if(firstInitialization){
 			firstInitialization = false;
+			Class.forName("com.mysql.jdbc.Driver");
+			conn= (Connection) DriverManager.getConnection(connection.getUrl(), connection.getUsername(), connection.getPassword());
 			initializeDB();
 		}
 		
@@ -47,16 +49,8 @@ public class ConnectionManager {
 	
 	//EACH TIME; WE HAVE TO OPEN AND CLOSE THE CONNECTION TO THE DB
 	private void getConnection() throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
-		if(firstRun){
-			System.out.println("First run here");
-			firstRun = false;
-			conn= (Connection) DriverManager.getConnection(connection.getUrl(), connection.getUsername(), connection.getPassword());
-		}
-		else{ //DATABASE noiseapp NOW EXISTS, LET'S USE IT!
-			System.out.println("Not even more first run");
-			conn= (Connection) DriverManager.getConnection(connection.getUrl()+DATABASE_NAME, connection.getUsername(), connection.getPassword());  
-		}                            
+		System.out.println("Connection block");
+		conn= (Connection) DriverManager.getConnection(connection.getUrl()+DATABASE_NAME, connection.getUsername(), connection.getPassword());                            
 		DatabaseMetaData md=(DatabaseMetaData) conn.getMetaData();
 		System.out.println("Informazioni sul driver:");
 		System.out.println("Nome: "+ md.getDriverName() + "; versione: " + md.getDriverVersion());
@@ -74,7 +68,6 @@ public class ConnectionManager {
 	//PRIVATE, FOR THE INITIALIZATION OF THE DB
 	private void initializeDB() throws ClassNotFoundException{
 		try {
-			getConnection();
 			String createDatabase = "CREATE DATABASE IF NOT EXISTS "+DATABASE_NAME;
 			String useDatabase = "USE " + DATABASE_NAME;
 			String sensors = "CREATE TABLE IF NOT EXISTS "+SENSOR_TABLE+"(SENSOR_NAME VARCHAR(32) PRIMARY KEY, LATITUDE VARCHAR(32) NOT NULL, LONGITUDE VARCHAR(32) NOT NULL, NOISE_LEVEL FLOAT NOT NULL)";
