@@ -1,5 +1,5 @@
 /*
- *	This project was realized for the Pervasive System class at La Sapienza - Universit‡ di Roma
+ *	This project was realized for the Pervasive System class at La Sapienza - Universit√† di Roma
  *	It is released with the Apache License 2.0
  *	Developed by Federico Boarelli, Alessio Tirabasso and Marco Nigro
  *	Rome, May 2017 
@@ -29,7 +29,7 @@ public class SoundLevel {
 	private static final String ERROR = "Error";
 	
 	//Set up your connection here
-	ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","root","Pervasive_System_2017");
+	private static ConnectionMysql conn = new ConnectionMysql("jdbc:mysql://localhost:3306/","root","Pervasive_System_2017");
 	
 	//Test case to check the server status
 	@Path("/hellosound")
