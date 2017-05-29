@@ -1,6 +1,5 @@
 ## NoiseApp <br />
-An accademic project developed in for the Pervasive System class a Univerity of Rome - La Sapienza, Master Degree in Computer Engineering<br />
-The goal of the project is to have a noise map of the city, in order to achieve better booking for tourist based on their preferences: for example, young tourist may like to be near a zone with high nightlife activities(so with a higher noise of level) and viceversa a family maybe want to avoid such places. <br />
+An accademic project developed in for the Pervasive System class a Univerity of Rome - La Sapienza, Master Degree in Computer Engineering. The goal of the project is to have a noise map of the city, in order to achieve better booking for tourist based on their preferences: for example, young tourist may like to be near a zone with high nightlife activities(so with a higher noise of level) and viceversa a family maybe want to avoid such places. <br />
 
 ## Overview <br />
 
@@ -102,7 +101,7 @@ Useful in the deployment stage, in order to avoid the schema drop each time <br 
 
 
 ## Links <br />
-Project presentation : https://github.com/projectNoiseRome/projectNoiseRome
+Project presentation : https://github.com/projectNoiseRome/projectNoiseRome <br />
 NoiseApp Android repository : https://github.com/projectNoiseRome/NoiseApp
 
 
