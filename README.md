@@ -82,6 +82,8 @@ It return the body in case of success <br />
 >	@Consumes(MediaType.APPLICATION_JSON) <br />
 >	@POST <br />
 
+Note: the sensorName is NOT unique, so create any sensorName different from other one, otherwise tey will overwrite their data
+
 ### UserNoiseLevel:
 This function is used by the user to post their own data <br />
 The parameter "String noise" contain a json with all the value of the sensor (userName, latitude, longitude, noiseLevel, noiseType) <br />
