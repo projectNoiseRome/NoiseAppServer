@@ -102,7 +102,10 @@ Useful in the deployment stage, in order to avoid the schema drop each time <br 
 
 ## Links <br />
 Project presentation : https://github.com/projectNoiseRome/projectNoiseRome <br />
-NoiseApp Android repository : https://github.com/projectNoiseRome/NoiseApp
+Slides initial concept: https://www.slideshare.net/MarcoNigro6/noise-app<br />
+MVP: https://www.slideshare.net/MarcoNigro6/noise-app-mvp<br />
+Final Presentation: https://www.slideshare.net/MarcoNigro6/noiseapp-final-presentation<br/>
+Android rep: https://github.com/projectNoiseRome/NoiseApp<br />
 
 
 ## Developed by:<br />
